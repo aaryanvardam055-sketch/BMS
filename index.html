@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#00d4ff"/>
+<meta name="description" content="BMS Engineering Suite - IO Summary & Controller Selection"/>
+<link rel="manifest" href="manifest.json"/>
+<title>BMS Engineering Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --bg-primary: #060b18;
+  --bg-secondary: #0d1628;
+  --bg-card: #111d35;
+  --bg-card2: #0e1830;
+  --accent: #00d4ff;
+  --accent2: #ff6b35;
+  --accent3: #39ff14;
+  --accent4: #bf5fff;
+  --text-primary: #e8f4fd;
+  --text-secondary: #7aa3c8;
+  --text-muted: #3d5a7a;
+  --border: #1a3558;
+  --border-accent: #00d4ff33;
+  --danger: #ff3860;
+  --success: #39ff14;
+  --warning: #ffdd57;
+  --shadow: 0 4px 24px rgba(0,212,255,0.08);
+  --shadow-lg: 0 8px 48px rgba(0,212,255,0.12);
+  --font-display: 'Exo 2', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ===== GRID BACKGROUND ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== TOPBAR ===== */
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,11,24,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-accent);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 60px;
+  box-shadow: 0 2px 24px rgba(0,212,255,0.1);
+}
+
+#topbar .logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#topbar .logo span { color: var(--text-secondary); font-weight: 300; font-size: 0.75rem; letter-spacing: 4px; }
+
+.nav-tabs { display: flex; gap: 4px; margin-left: 16px; }
+.nav-tab {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all 0.2s;
+}
+.nav-tab:hover { color: var(--accent); border-color: var(--border-accent); }
+.nav-tab.active {
+  color: var(--bg-primary);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(0,212,255,0.4);
+}
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+#installBtn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  padding: 7px 16px;
+  border: 1px solid var(--accent3);
+  border-radius: 4px;
+  background: rgba(57,255,20,0.08);
+  color: var(--accent3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#installBtn:hover { background: rgba(57,255,20,0.18); box-shadow: 0 0 12px rgba(57,255,20,0.3); }
+#installBtn.show { display: flex; }
+
+/* ===== MAIN CONTAINER ===== */
+.module { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+.module.active { display: block; }
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-header h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.section-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border-accent); }
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
+.form-group label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.form-control {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 9px 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+.form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,212,255,0.15); }
+.form-control::placeholder { color: var(--text-muted); }
+select.form-control { cursor: pointer; }
+option { background: var(--bg-secondary); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: 1px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--bg-primary); }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(0,212,255,0.5); transform: translateY(-1px); }
+.btn-secondary { background: transparent; border-color: var(--accent); color: var(--accent); }
+.btn-secondary:hover { background: rgba(0,212,255,0.1); }
+.btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+.btn-danger:hover { background: rgba(255,56,96,0.1); }
+.btn-success { background: transparent; border-color: var(--accent3); color: var(--accent3); }
+.btn-success:hover { background: rgba(57,255,20,0.1); box-shadow: 0 0 12px rgba(57,255,20,0.3); }
+.btn-warning { background: transparent; border-color: var(--warning); color: var(--warning); }
+.btn-warning:hover { background: rgba(255,221,87,0.1); }
+.btn-purple { background: transparent; border-color: var(--accent4); color: var(--accent4); }
+.btn-purple:hover { background: rgba(191,95,255,0.1); box-shadow: 0 0 12px rgba(191,95,255,0.3); }
+.btn-sm { padding: 6px 14px; font-size: 0.78rem; }
+.btn-icon { padding: 7px 10px; }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+
+/* ===== TABLES ===== */
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+}
+thead tr {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--accent);
+}
+thead th {
+  padding: 11px 13px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:hover { background: rgba(0,212,255,0.04); }
+tbody tr:last-child { border-bottom: none; }
+tbody td { padding: 9px 13px; color: var(--text-primary); }
+tbody td.mono { font-family: var(--font-mono); font-size: 0.82rem; }
+tbody td.center { text-align: center; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.badge-di { background: rgba(0,212,255,0.15); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+.badge-do { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid rgba(255,107,53,0.3); }
+.badge-ai { background: rgba(57,255,20,0.15); color: var(--accent3); border: 1px solid rgba(57,255,20,0.3); }
+.badge-ao { background: rgba(191,95,255,0.15); color: var(--accent4); border: 1px solid rgba(191,95,255,0.3); }
+
+/* ===== TOTALS BAR ===== */
+.totals-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.total-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 80px;
+}
+.total-item .label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.total-item .value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.total-item.di .value { color: var(--accent); }
+.total-item.do-t .value { color: var(--accent2); }
+.total-item.ai .value { color: var(--accent3); }
+.total-item.ao .value { color: var(--accent4); }
+.total-item.total .value { color: var(--text-primary); }
+
+/* ===== SUB-LOCATION CARD ===== */
+.subloc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.subloc-card:hover { border-color: var(--border-accent); }
+.subloc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.subloc-header h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.subloc-body { padding: 20px; }
+
+/* ===== COMPONENT SELECTOR ===== */
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.comp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.comp-item:hover { border-color: var(--accent); }
+.comp-item.selected { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+.comp-item input[type=checkbox] { display: none; }
+.comp-item .comp-icon { font-size: 1.5rem; }
+.comp-item .comp-info { flex: 1; }
+.comp-item .comp-name { font-weight: 700; font-size: 0.85rem; color: var(--text-primary); }
+.comp-item .comp-qty { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.comp-item .comp-qty input {
+  width: 56px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 3px;
+  text-align: center;
+  outline: none;
+}
+.comp-item .comp-qty input:focus { border-color: var(--accent); }
+
+/* ===== INSTANCE SECTION ===== */
+.instances-section { margin-top: 16px; }
+.instance-group { margin-bottom: 16px; }
+.instance-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent2);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: rgba(255,107,53,0.08);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 4px 4px 0;
+}
+.instance-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.instance-name {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--accent);
+  min-width: 80px;
+  padding-top: 6px;
+  font-weight: 700;
+}
+.desc-grid { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+.desc-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.8rem;
+}
+.desc-item:hover { border-color: var(--accent); }
+.desc-item.selected { border-color: var(--accent3); background: rgba(57,255,20,0.08); }
+.desc-item input[type=checkbox] { display: none; }
+.desc-item .desc-check {
+  width: 14px; height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+.desc-item.selected .desc-check { background: var(--accent3); border-color: var(--accent3); color: var(--bg-primary); }
+.desc-item .io-pills { display: flex; gap: 3px; margin-left: 4px; }
+.io-pill {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+.io-pill.di { background: rgba(0,212,255,0.15); color: var(--accent); }
+.io-pill.do-p { background: rgba(255,107,53,0.15); color: var(--accent2); }
+.io-pill.ai { background: rgba(57,255,20,0.15); color: var(--accent3); }
+.io-pill.ao { background: rgba(191,95,255,0.15); color: var(--accent4); }
+
+/* ===== MODULE 2 SPECIFIC ===== */
+.io-input-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.io-input-item { display: flex; flex-direction: column; gap: 6px; }
+.io-input-item label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
+.io-input-item input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.io-input-item input:focus { border-color: var(--accent); }
+.io-input-item.di input { color: var(--accent); }
+.io-input-item.do-i input { color: var(--accent2); }
+.io-input-item.ai input { color: var(--accent3); }
+.io-input-item.ao input { color: var(--accent4); }
+.io-input-item.sft input { color: var(--warning); }
+
+.mode-selector { display: flex; gap: 10px; }
+.mode-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.mode-btn.active.eng { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.1); }
+.mode-btn.active.cost { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.1); }
+.mode-btn:not(.active):hover { border-color: var(--border-accent); color: var(--text-primary); }
+
+/* ===== RESULT SECTIONS ===== */
+.result-section { margin-top: 24px; }
+.result-block {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.result-block h3 {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.ctrl-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ctrl-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--accent);
+}
+.ctrl-specs { display: flex; gap: 12px; flex-wrap: wrap; }
+.ctrl-spec {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  gap: 3px;
+}
+.ctrl-spec .s-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
+.ctrl-spec .s-val { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+.ctrl-spec.di .s-val { color: var(--accent); }
+.ctrl-spec.do-s .s-val { color: var(--accent2); }
+.ctrl-spec.uio .s-val { color: var(--accent4); }
+.ctrl-spec.sft .s-val { color: var(--warning); }
+
+.module-list { display: flex; flex-direction: column; gap: 8px; }
+.module-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+.module-tag {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--accent);
+  min-width: 120px;
+}
+.module-alloc { font-size: 0.8rem; color: var(--text-secondary); flex: 1; }
+.module-spare { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent3); }
+.module-power { font-family: var(--font-mono); font-size: 0.75rem; color: var(--warning); margin-left: auto; }
+
+.rail-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.rail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.rail-title { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent2); letter-spacing: 1px; }
+.rail-power { font-family: var(--font-mono); font-size: 0.75rem; color: var(--warning); }
+.rail-modules { display: flex; gap: 6px; flex-wrap: wrap; }
+.rail-module-tag {
+  padding: 4px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.power-bar-wrap { margin-top: 8px; height: 6px; background: var(--bg-primary); border-radius: 3px; overflow: hidden; }
+.power-bar { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.power-bar.ok { background: var(--accent3); }
+.power-bar.warn { background: var(--warning); }
+.power-bar.over { background: var(--danger); }
+
+/* ===== NOTIFY TOAST ===== */
+#toast-container { position: fixed; top: 72px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: 1px solid;
+  backdrop-filter: blur(10px);
+  animation: toastIn 0.3s ease;
+  max-width: 340px;
+}
+.toast.success { background: rgba(57,255,20,0.12); border-color: var(--accent3); color: var(--accent3); }
+.toast.error { background: rgba(255,56,96,0.12); border-color: var(--danger); color: var(--danger); }
+.toast.info { background: rgba(0,212,255,0.12); border-color: var(--accent); color: var(--accent); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+
+/* ===== MISC ===== */
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.text-muted { color: var(--text-muted); font-size: 0.85rem; }
+.text-accent { color: var(--accent); }
+.text-center { text-align: center; }
+.gap-10 { gap: 10px; }
+.mt-10 { margin-top: 10px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+.select-all-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.select-all-row label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); cursor: pointer; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  #topbar { padding: 0 12px; gap: 10px; }
+  #topbar .logo span { display: none; }
+  .nav-tab { padding: 6px 12px; font-size: 0.75rem; }
+  .module { padding: 12px; }
+  .form-row { flex-direction: column; }
+  .comp-grid { grid-template-columns: 1fr 1fr; }
+  .totals-bar { gap: 10px; }
+  .total-item .value { font-size: 1.5rem; }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.card, .subloc-card, .result-block { animation: fadeIn 0.3s ease; }
+
+/* ===== CHECKBOX STYLE ===== */
+input[type=checkbox] {
+  width: 15px; height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ===== REMARKS CELL ===== */
+td.remarks { font-size: 0.75rem; color: var(--text-secondary); font-style: italic; }
+
+/* ===== TFOOT ===== */
+tfoot tr { background: var(--bg-secondary); border-top: 2px solid var(--accent); }
+tfoot td {
+  padding: 10px 13px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+tfoot td.total-di { color: var(--accent); }
+tfoot td.total-do { color: var(--accent2); }
+tfoot td.total-ai { color: var(--accent3); }
+tfoot td.total-ao { color: var(--accent4); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav id="topbar">
+  <div class="logo">
+    ⚡ BMS Suite <span>Engineering Platform</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-module="module1">IO Summary</button>
+    <button class="nav-tab" data-module="module2">Controller Selection</button>
+  </div>
+  <div class="topbar-right">
+    <button id="installBtn">📲 Install App</button>
+  </div>
+</nav>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ==================== MODULE 1 ==================== -->
+<div id="module1" class="module active">
+  <div class="section-header">
+    <h1>IO Summary Generator</h1>
+    <p>Configure project IO points by sub-location, component, and instance</p>
+  </div>
+
+  <!-- Step 1: Project Info -->
+  <div class="card">
+    <div class="card-title">Project Setup</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Project Name</label>
+        <input class="form-control" id="projectName" type="text" placeholder="e.g. Al Barsha Mall BMS"/>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input class="form-control" id="projectLocation" type="text" placeholder="e.g. Dubai, UAE"/>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="saveProjectBtn">💾 Save Project</button>
+      <button class="btn btn-danger btn-sm" id="clearProjectBtn">🗑 Clear All</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Sub-Locations -->
+  <div class="card">
+    <div class="card-title">Sub-Locations</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Sub-Location Name</label>
+        <input class="form-control" id="sublocName" type="text" placeholder="e.g. Ground Floor, Plant Room"/>
+      </div>
+      <div class="form-group" style="justify-content:flex-end;">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary" id="addSublocBtn">+ Add Sub-Location</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-location cards container -->
+  <div id="sublocContainer"></div>
+
+  <!-- IO Summary Table -->
+  <div class="card" id="summaryCard" style="display:none;">
+    <div class="card-title">IO Summary Table</div>
+
+    <div class="totals-bar" id="totalBar">
+      <div class="total-item di"><span class="label">DI</span><span class="value" id="tot-di">0</span></div>
+      <div class="total-item do-t"><span class="label">DO</span><span class="value" id="tot-do">0</span></div>
+      <div class="total-item ai"><span class="label">AI</span><span class="value" id="tot-ai">0</span></div>
+      <div class="total-item ao"><span class="label">AO</span><span class="value" id="tot-ao">0</span></div>
+      <div class="total-item total"><span class="label">Total IO</span><span class="value" id="tot-total">0</span></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="ioTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Sub-Location</th>
+            <th>Component</th>
+            <th>Instance</th>
+            <th>Description</th>
+            <th>DI</th>
+            <th>DO</th>
+            <th>AI</th>
+            <th>AO</th>
+            <th>Conclus</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="ioTableBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" style="color:var(--text-secondary);font-family:var(--font-mono);font-size:0.72rem;letter-spacing:1px;">TOTAL</td>
+            <td class="total-di" id="foot-di">0</td>
+            <td class="total-do" id="foot-do">0</td>
+            <td class="total-ai" id="foot-ai">0</td>
+            <td class="total-ao" id="foot-ao">0</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn btn-success" id="exportExcelBtn">📊 Export to Excel</button>
+      <button class="btn btn-purple" id="sendToCtrlBtn">➜ Send to Controller Selection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODULE 2 ==================== -->
+<div id="module2" class="module">
+  <div class="section-header">
+    <h1>Controller Selection Tool</h1>
+    <p>Automated BMS controller and extension module allocation with rail engineering</p>
+  </div>
+
+  <!-- IO Inputs -->
+  <div class="card">
+    <div class="card-title">IO Requirements</div>
+    <div class="io-input-grid">
+      <div class="io-input-item di">
+        <label>DI — Digital Input</label>
+        <input type="number" id="c-di" value="0" min="0"/>
+      </div>
+      <div class="io-input-item do-i">
+        <label>DO — Digital Output</label>
+        <input type="number" id="c-do" value="0" min="0"/>
+      </div>
+      <div class="io-input-item ai">
+        <label>AI — Analog Input</label>
+        <input type="number" id="c-ai" value="0" min="0"/>
+      </div>
+      <div class="io-input-item ao">
+        <label>AO — Analog Output</label>
+        <input type="number" id="c-ao" value="0" min="0"/>
+      </div>
+      <div class="io-input-item sft">
+        <label>SFT — Soft Points</label>
+        <input type="number" id="c-sft" value="0" min="0"/>
+      </div>
+    </div>
+
+    <div class="mt-16">
+      <div class="card-title" style="margin-bottom:10px;">Optimization Mode</div>
+      <div class="mode-selector">
+        <button class="mode-btn active eng" data-mode="engineering">⚙ Engineering Mode<br><small style="font-weight:400;text-transform:none;letter-spacing:0;">Minimize modules, maximize capacity</small></button>
+        <button class="mode-btn cost" data-mode="cost">💰 Cost Mode<br><small style="font-weight:400;text-transform:none;letter-spacing:0;">Minimize cost, smaller modules</small></button>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn btn-primary" id="runSelectionBtn">⚡ Run Controller Selection</button>
+      <button class="btn btn-secondary btn-sm" id="clearCtrlBtn">✕ Clear</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="ctrlResults" class="result-section" style="display:none;"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ============================================================
+// DATA: IO DESCRIPTIONS DATABASE
+// ============================================================
+const IO_DATABASE = {
+  // ── Exact data from Image 1 ──
+  AHU: [
+    { desc: "AHU ON/OFF Command",        DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
+    { desc: "AHU ON/OFF Status",         DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "AHU Trip Status",           DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "AHU Auto/Manual Status",    DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Return Air Temperature",    DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Supply Air Temperature",    DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "CO₂ Sensor",               DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Humidity Sensor",           DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Filter DP Status",          DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Damper Control",            DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
+    { desc: "Valve Control (CHV Valve)", DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
+    { desc: "VFD Speed Feedback",        DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "VFD Speed Control",         DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
+  ],
+  "Cooling Tower": [
+    { desc: "Cooling Tower Start/Stop",  DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
+    { desc: "Cooling Tower Run Status",  DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Cooling Tower Trip Status", DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Cooling Tower Fan Status",  DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Cooling Tower Temperature", DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Basin Level",               DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+  ],
+  Pump: [
+    { desc: "Pump ON/OFF Command",       DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
+    { desc: "Pump ON/OFF Status",        DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Pump Trip Indication",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Pump Auto/Manual Status",   DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Pump Feedback Status",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+  ],
+  Chiller: [
+    { desc: "Chiller ON/OFF Command",    DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
+    { desc: "Chiller ON/OFF Status",     DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Chiller Trip Status",       DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Chiller Alarm Status",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Chiller Fault Reset",       DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
+    { desc: "Leaving Water Temperature", DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Entering Water Temperature",DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Chilled Water Flow",        DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "Modulating Valve Control",  DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
+  ],
+};
+
+// Remarks come directly from each IO_DATABASE entry's .remark field
+const REMARKS = {
+  DI: "Potential free contact",
+  DO: "Relay Command",
+  AI: "4-20mA / 0-10V Input",
+  AO: "4-20mA / 0-10V Output",
+};
+
+// ============================================================
+// DATA: CONTROLLERS DATABASE  (exact from Image 2)
+// ============================================================
+// Onboard IO columns: DI / DO / UIO
+// Extendable IO = max additional IO via TXM modules
+// Soft Integration = SFT soft points
+// Power Supply Max to TXM = max mA to bus (all = 300 mA)
+const CONTROLLERS = [
+  // model              DI   DO  UIO  extIO  SFT   maxPwr  desc
+  { model:"PXC4.E16S-2",  DI:16, DO:0,  UIO:4,  extIO:50,  SFT:0,    maxPwr:300, desc:"16 DI, 4 DO onboard" },
+  { model:"PXC4.E16-2/M16",DI:16,DO:0,  UIO:4,  extIO:50,  SFT:40,   maxPwr:300, desc:"16 DI, 4 DO, 40 SFT" },
+  { model:"PXC5.E24/E24-N",DI:24, DO:2,  UIO:6,  extIO:80,  SFT:120,  maxPwr:300, desc:"24 DI, 2 DO, 6 UIO" },
+  { model:"PXC7.E400S",   DI:1,  DO:0,  UIO:0,  extIO:100, SFT:100,  maxPwr:300, desc:"Compact, 100 extIO" },
+  { model:"PXC7.E400M",   DI:1,  DO:0,  UIO:0,  extIO:200, SFT:250,  maxPwr:300, desc:"Medium, 200 extIO" },
+  { model:"PXC7.E400L",   DI:1,  DO:0,  UIO:0,  extIO:400, SFT:600,  maxPwr:300, desc:"Large, 400 extIO" },
+  { model:"PXC5.E003",    DI:1,  DO:0,  UIO:0,  extIO:0,   SFT:2000, maxPwr:300, desc:"Software only, 2000 SFT" },
+];
+
+// ============================================================
+// DATA: TXM MODULES  (exact from Image 2)
+// ============================================================
+// costRank: lower = cheaper (TXM1.4D3R=1 cheapest, TXM1.8X=6 most expensive)
+const TXM_MODULES = {
+  "TXM1.8D":   { DI:8,  DO:0, AI:0, AO:0, UIO:0, XIO:0, power:53, costRank:2, type:"DI" },
+  "TXM1.16D":  { DI:16, DO:0, AI:0, AO:0, UIO:0, XIO:0, power:65, costRank:3, type:"DI" },
+  "TXM1.8U":   { DI:0,  DO:0, AI:0, AO:0, UIO:8, XIO:0, power:59, costRank:5, type:"UIO" },
+  "TXM1.8X":   { DI:0,  DO:0, AI:0, AO:0, UIO:0, XIO:8, power:230,costRank:6, type:"XIO" },
+  "TXM1.6R":   { DI:0,  DO:6, AI:0, AO:0, UIO:0, XIO:0, power:68, costRank:4, type:"DO" },
+  "TXM1.4D3R": { DI:4,  DO:3, AI:0, AO:0, UIO:0, XIO:0, power:42, costRank:1, type:"HYBRID" },
+};
+
+// TXS modules from Image 2
+const TXS_MODULES = {
+  "TXS1.12F10": { type:"Power Supply Module",      currentRating:"1.2 A" },
+  "TXS1.EF10":  { type:"Bus Communication Module", currentRating:"0" },
+};
+
+// Max power supply to TXM bus per controller = 300 mA (from Image 2)
+const MAX_RAIL_POWER = 300;
+
+// ============================================================
+// DATA: ADDRESS KEY  (exact from Image 2)
+// ============================================================
+// TXA1.K12   → keys 1–12     + reset key
+// TXA1.K24   → keys 1–24     + 2 reset keys
+// TXA1.K48   → keys 25–48    + 2 reset keys
+// TXA1.K72   → keys 49–72    + 2 reset keys
+// TXA1.K96   → keys 73–96    + 2 reset keys
+// TXA1.K120  → keys 97–120   + 2 reset keys
+// TXA1.5K120 → keys 5,10,15…120 + 2 reset keys
+const ADDRESS_KEY = [
+  { max:12,  key:"TXA1.K12",   note:"Keys 1–12 + reset key" },
+  { max:24,  key:"TXA1.K24",   note:"Keys 1–24 + 2 reset keys" },
+  { max:48,  key:"TXA1.K48",   note:"Keys 25–48 + 2 reset keys" },
+  { max:72,  key:"TXA1.K72",   note:"Keys 49–72 + 2 reset keys" },
+  { max:96,  key:"TXA1.K96",   note:"Keys 73–96 + 2 reset keys" },
+  { max:120, key:"TXA1.K120",  note:"Keys 97–120 + 2 reset keys" },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  project: { name: "", location: "" },
+  subLocations: [],
+  mode: "engineering",
+};
+
+// ============================================================
+// UTILITY
+// ============================================================
+function toast(msg, type = "info") {
+  const tc = document.getElementById("toast-container");
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function saveState() {
+  localStorage.setItem("bms_state", JSON.stringify(state));
+}
+
+function loadState() {
+  const s = localStorage.getItem("bms_state");
+  if (s) {
+    try { state = JSON.parse(s); } catch(e) {}
+  }
+}
+
+function uid() { return Math.random().toString(36).substr(2,9); }
+
+// ============================================================
+// MODULE NAVIGATION
+// ============================================================
+document.querySelectorAll(".nav-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".module").forEach(m => m.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById(tab.dataset.module).classList.add("active");
+    if (tab.dataset.module === "module1") renderAll();
+    if (tab.dataset.module === "module2") renderSummaryTable();
+  });
+});
+
+// ============================================================
+// PROJECT SAVE / CLEAR
+// ============================================================
+document.getElementById("saveProjectBtn").addEventListener("click", () => {
+  state.project.name = document.getElementById("projectName").value.trim();
+  state.project.location = document.getElementById("projectLocation").value.trim();
+  saveState();
+  toast("Project saved!", "success");
+  renderSummaryTable();
+});
+
+document.getElementById("clearProjectBtn").addEventListener("click", () => {
+  if (!confirm("Clear all data? This cannot be undone.")) return;
+  state = { project:{name:"",location:""}, subLocations:[], mode:"engineering" };
+  saveState();
+  document.getElementById("projectName").value = "";
+  document.getElementById("projectLocation").value = "";
+  renderAll();
+  toast("All data cleared.", "error");
+});
+
+// ============================================================
+// ADD SUB-LOCATION
+// ============================================================
+document.getElementById("addSublocBtn").addEventListener("click", () => {
+  const name = document.getElementById("sublocName").value.trim();
+  if (!name) { toast("Enter a sub-location name.", "error"); return; }
+  if (state.subLocations.find(s => s.name === name)) { toast("Sub-location already exists.", "error"); return; }
+  state.subLocations.push({ id: uid(), name, components: {} });
+  saveState();
+  document.getElementById("sublocName").value = "";
+  renderSubLocations();
+  renderSummaryTable();
+  toast(`Added: ${name}`, "success");
+});
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+function renderAll() {
+  document.getElementById("projectName").value = state.project.name;
+  document.getElementById("projectLocation").value = state.project.location;
+  renderSubLocations();
+  renderSummaryTable();
+}
+
+// ============================================================
+// RENDER SUB-LOCATIONS
+// ============================================================
+function renderSubLocations() {
+  const container = document.getElementById("sublocContainer");
+  container.innerHTML = "";
+  state.subLocations.forEach(sl => {
+    container.appendChild(buildSublocCard(sl));
+  });
+}
+
+function buildSublocCard(sl) {
+  const card = document.createElement("div");
+  card.className = "subloc-card";
+  card.id = `slcard-${sl.id}`;
+
+  // Header
+  const header = document.createElement("div");
+  header.className = "subloc-header";
+  header.innerHTML = `
+    <h3>📍 ${sl.name}</h3>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-danger" data-del-sl="${sl.id}">🗑 Remove</button>
+    </div>`;
+  card.appendChild(header);
+
+  // Body
+  const body = document.createElement("div");
+  body.className = "subloc-body";
+
+  // Component selection
+  const compTitle = document.createElement("div");
+  compTitle.style.cssText = "font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;";
+  compTitle.textContent = "Select Components & Quantities:";
+  body.appendChild(compTitle);
+
+  const compGrid = document.createElement("div");
+  compGrid.className = "comp-grid";
+
+  ["AHU","Pump","Chiller","Cooling Tower"].forEach(comp => {
+    const data = sl.components[comp] || { selected: false, qty: 1 };
+    const item = document.createElement("div");
+    item.className = "comp-item" + (data.selected ? " selected" : "");
+    item.dataset.slId = sl.id;
+    item.dataset.comp = comp;
+    item.innerHTML = `
+      <div class="comp-icon">${{AHU:"🌀",Pump:"🔧",Chiller:"❄",["Cooling Tower"]:"🗼"}[comp]}</div>
+      <div class="comp-info">
+        <div class="comp-name">${comp}</div>
+        <div class="comp-qty">
+          <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);">QTY:</span>
+          <input type="number" min="1" max="50" value="${data.qty||1}" data-sl="${sl.id}" data-comp="${comp}" class="qty-input"/>
+        </div>
+      </div>`;
+    compGrid.appendChild(item);
+  });
+  body.appendChild(compGrid);
+
+  // Instances section
+  const instSection = document.createElement("div");
+  instSection.className = "instances-section";
+  instSection.id = `inst-${sl.id}`;
+  body.appendChild(instSection);
+
+  // Save button
+  const saveRow = document.createElement("div");
+  saveRow.className = "btn-row";
+  saveRow.innerHTML = `<button class="btn btn-primary btn-sm" data-save-sl="${sl.id}">💾 Save Sub-Location</button>`;
+  body.appendChild(saveRow);
+
+  card.appendChild(body);
+
+  // Render existing instances
+  renderInstances(sl, instSection);
+
+  // Events: comp click to select
+  compGrid.querySelectorAll(".comp-item").forEach(item => {
+    item.addEventListener("click", e => {
+      if (e.target.classList.contains("qty-input")) return;
+      const slId = item.dataset.slId;
+      const comp = item.dataset.comp;
+      const sl2 = state.subLocations.find(s => s.id === slId);
+      if (!sl2.components[comp]) sl2.components[comp] = { selected: false, qty: 1 };
+      sl2.components[comp].selected = !sl2.components[comp].selected;
+      saveState();
+      item.classList.toggle("selected");
+      renderInstances(sl2, instSection);
+    });
+  });
+
+  // Events: qty change
+  compGrid.querySelectorAll(".qty-input").forEach(inp => {
+    inp.addEventListener("change", () => {
+      const slId = inp.dataset.sl;
+      const comp = inp.dataset.comp;
+      const sl2 = state.subLocations.find(s => s.id === slId);
+      if (!sl2.components[comp]) sl2.components[comp] = { selected: false, qty: 1 };
+      sl2.components[comp].qty = parseInt(inp.value) || 1;
+      saveState();
+      renderInstances(sl2, document.getElementById(`inst-${slId}`));
+    });
+  });
+
+  // Delete sub-location
+  header.querySelector(`[data-del-sl]`).addEventListener("click", () => {
+    if (!confirm(`Remove "${sl.name}"?`)) return;
+    state.subLocations = state.subLocations.filter(s => s.id !== sl.id);
+    saveState();
+    renderSubLocations();
+    renderSummaryTable();
+    toast(`Removed: ${sl.name}`, "error");
+  });
+
+  // Save sub-location
+  saveRow.querySelector(`[data-save-sl]`).addEventListener("click", () => {
+    saveState();
+    renderSummaryTable();
+    toast(`Saved: ${sl.name}`, "success");
+  });
+
+  return card;
+}
+
+// ============================================================
+// RENDER INSTANCES + DESCRIPTIONS
+// ============================================================
+function renderInstances(sl, container) {
+  container.innerHTML = "";
+  const selected = Object.entries(sl.components).filter(([,v]) => v.selected);
+  if (!selected.length) return;
+
+  selected.forEach(([comp, data]) => {
+    const qty = data.qty || 1;
+    const group = document.createElement("div");
+    group.className = "instance-group";
+    const groupTitle = document.createElement("div");
+    groupTitle.className = "instance-group-title";
+    groupTitle.textContent = `${comp} — ${qty} Unit${qty>1?"s":""}`;
+    group.appendChild(groupTitle);
+
+    for (let i = 1; i <= qty; i++) {
+      const instKey = `${comp}-${i}`;
+      const selDescs = (sl.components[comp].instances && sl.components[comp].instances[instKey]) || [];
+
+      const row = document.createElement("div");
+      row.className = "instance-row";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "instance-name";
+      nameEl.textContent = instKey;
+      row.appendChild(nameEl);
+
+      const descGrid = document.createElement("div");
+      descGrid.className = "desc-grid";
+
+      // Select All checkbox
+      const selectAllWrap = document.createElement("div");
+      selectAllWrap.className = "select-all-row";
+      selectAllWrap.style.cssText = "width:100%;flex:none;";
+      selectAllWrap.innerHTML = `<input type="checkbox" id="sa-${sl.id}-${instKey.replace(/\s/g,'-')}" ${selDescs.length === IO_DATABASE[comp].length ? 'checked' : ''}/><label for="sa-${sl.id}-${instKey.replace(/\s/g,'-')}" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);cursor:pointer;">Select All</label>`;
+      row.appendChild(selectAllWrap);
+
+      IO_DATABASE[comp].forEach(entry => {
+        const isSelected = selDescs.includes(entry.desc);
+        const di = document.createElement("div");
+        di.className = "desc-item" + (isSelected ? " selected" : "");
+        di.dataset.slId = sl.id;
+        di.dataset.comp = comp;
+        di.dataset.inst = instKey;
+        di.dataset.desc = entry.desc;
+
+        const pills = [];
+        if (entry.DI) pills.push(`<span class="io-pill di">DI</span>`);
+        if (entry.DO) pills.push(`<span class="io-pill do-p">DO</span>`);
+        if (entry.AI) pills.push(`<span class="io-pill ai">AI</span>`);
+        if (entry.AO) pills.push(`<span class="io-pill ao">AO</span>`);
+
+        di.innerHTML = `
+          <div class="desc-check">${isSelected ? "✓" : ""}</div>
+          <span>${entry.desc}</span>
+          <div class="io-pills">${pills.join("")}</div>`;
+
+        di.addEventListener("click", () => toggleDesc(sl.id, comp, instKey, entry.desc, di));
+        descGrid.appendChild(di);
+      });
+
+      row.appendChild(descGrid);
+      group.appendChild(row);
+
+      // Select All logic
+      const saCheckbox = selectAllWrap.querySelector("input");
+      saCheckbox.addEventListener("change", () => {
+        const allDescs = IO_DATABASE[comp].map(e => e.desc);
+        if (!sl.components[comp].instances) sl.components[comp].instances = {};
+        sl.components[comp].instances[instKey] = saCheckbox.checked ? [...allDescs] : [];
+        saveState();
+        // re-render this inst section
+        renderInstances(sl, container);
+      });
+    }
+    container.appendChild(group);
+  });
+}
+
+function toggleDesc(slId, comp, instKey, desc, el) {
+  const sl = state.subLocations.find(s => s.id === slId);
+  if (!sl.components[comp].instances) sl.components[comp].instances = {};
+  if (!sl.components[comp].instances[instKey]) sl.components[comp].instances[instKey] = [];
+  const arr = sl.components[comp].instances[instKey];
+  const idx = arr.indexOf(desc);
+  if (idx === -1) { arr.push(desc); el.classList.add("selected"); el.querySelector(".desc-check").textContent = "✓"; }
+  else { arr.splice(idx,1); el.classList.remove("selected"); el.querySelector(".desc-check").textContent = ""; }
+  saveState();
+}
+
+// ============================================================
+// RENDER SUMMARY TABLE
+// ============================================================
+function renderSummaryTable() {
+  const rows = collectTableRows();
+  const tbody = document.getElementById("ioTableBody");
+  tbody.innerHTML = "";
+
+  if (!rows.length) {
+    document.getElementById("summaryCard").style.display = "none";
+    return;
+  }
+  document.getElementById("summaryCard").style.display = "block";
+
+  let totDI=0, totDO=0, totAI=0, totAO=0, rowNum=1;
+
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    // Use the exact remark from the database entry
+    const remarkText = r.remark || "";
+    const conclusBadge = r.conclus
+      ? `<span class="badge badge-${r.conclus.toLowerCase().replace('do','do')}">${r.conclus}</span>`
+      : "";
+
+    tr.innerHTML = `
+      <td class="mono">${rowNum++}</td>
+      <td>${r.subLoc}</td>
+      <td>${r.comp}</td>
+      <td class="mono">${r.instance}</td>
+      <td>${r.desc}</td>
+      <td class="center">${r.DI ? `<span class="badge badge-di">${r.DI}</span>` : "-"}</td>
+      <td class="center">${r.DO ? `<span class="badge badge-do">${r.DO}</span>` : "-"}</td>
+      <td class="center">${r.AI ? `<span class="badge badge-ai">${r.AI}</span>` : "-"}</td>
+      <td class="center">${r.AO ? `<span class="badge badge-ao">${r.AO}</span>` : "-"}</td>
+      <td class="center">${conclusBadge}</td>
+      <td class="remarks">${remarkText}</td>`;
+    tbody.appendChild(tr);
+
+    totDI+=r.DI; totDO+=r.DO; totAI+=r.AI; totAO+=r.AO;
+  });
+
+  // Totals
+  ["di","do","ai","ao"].forEach(k => document.getElementById(`tot-${k}`).textContent = {di:totDI,do:totDO,ai:totAI,ao:totAO}[k]);
+  document.getElementById("tot-total").textContent = totDI+totDO+totAI+totAO;
+  ["di","do","ai","ao"].forEach(k => document.getElementById(`foot-${k}`).textContent = {di:totDI,do:totDO,ai:totAI,ao:totAO}[k]);
+}
+
+function collectTableRows() {
+  const rows = [];
+  state.subLocations.forEach(sl => {
+    Object.entries(sl.components).forEach(([comp, data]) => {
+      if (!data.selected) return;
+      const qty = data.qty || 1;
+      for (let i=1; i<=qty; i++) {
+        const instKey = `${comp}-${i}`;
+        const descs = (data.instances && data.instances[instKey]) || [];
+        descs.forEach(desc => {
+          const entry = IO_DATABASE[comp].find(e => e.desc === desc);
+          if (entry) rows.push({
+            subLoc: sl.name, comp, instance: instKey, desc,
+            DI: entry.DI, DO: entry.DO, AI: entry.AI, AO: entry.AO,
+            conclus: entry.conclus || "", remark: entry.remark || ""
+          });
+        });
+      }
+    });
+  });
+  return rows;
+}
+
+function getTotals() {
+  const rows = collectTableRows();
+  return rows.reduce((acc, r) => { acc.DI+=r.DI; acc.DO+=r.DO; acc.AI+=r.AI; acc.AO+=r.AO; return acc; }, {DI:0,DO:0,AI:0,AO:0});
+}
+
+// ============================================================
+// EXPORT TO EXCEL
+// ============================================================
+document.getElementById("exportExcelBtn").addEventListener("click", () => {
+  const rows = collectTableRows();
+  if (!rows.length) { toast("No data to export.", "error"); return; }
+  const wb = XLSX.utils.book_new();
+
+  // IO Summary sheet
+  const dataArr = [["#","Sub-Location","Component","Instance","Description","DI","DO","AI","AO","Conclus","Remarks"]];
+  let tot={DI:0,DO:0,AI:0,AO:0};
+  rows.forEach((r,i) => {
+    dataArr.push([i+1, r.subLoc, r.comp, r.instance, r.desc,
+      r.DI||"", r.DO||"", r.AI||"", r.AO||"",
+      r.conclus||"", r.remark||""]);
+    tot.DI+=r.DI; tot.DO+=r.DO; tot.AI+=r.AI; tot.AO+=r.AO;
+  });
+  dataArr.push(["","","","","TOTAL",tot.DI,tot.DO,tot.AI,tot.AO,"",""]);
+  const ws = XLSX.utils.aoa_to_sheet(dataArr);
+  ws["!cols"] = [4,18,14,12,40,5,5,5,5,30].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb, ws, "IO Summary");
+
+  // Project Info sheet
+  const infoArr = [
+    ["BMS Engineering Suite - IO Summary Report"],
+    [],
+    ["Project Name", state.project.name],
+    ["Location", state.project.location],
+    ["Generated", new Date().toLocaleString()],
+    [],
+    ["Total DI", tot.DI],
+    ["Total DO", tot.DO],
+    ["Total AI", tot.AI],
+    ["Total AO", tot.AO],
+    ["Total IO", tot.DI+tot.DO+tot.AI+tot.AO],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(infoArr);
+  ws2["!cols"] = [{wch:20},{wch:40}];
+  XLSX.utils.book_append_sheet(wb, ws2, "Project Info");
+
+  XLSX.writeFile(wb, `IO_Summary_${state.project.name||"BMS"}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  toast("Excel exported!", "success");
+});
+
+// ============================================================
+// SEND TO CONTROLLER SELECTION
+// ============================================================
+document.getElementById("sendToCtrlBtn").addEventListener("click", () => {
+  const t = getTotals();
+  document.getElementById("c-di").value = t.DI;
+  document.getElementById("c-do").value = t.DO;
+  document.getElementById("c-ai").value = t.AI;
+  document.getElementById("c-ao").value = t.AO;
+  // Switch to module 2
+  document.querySelectorAll(".nav-tab").forEach(tab => tab.classList.remove("active"));
+  document.querySelectorAll(".module").forEach(m => m.classList.remove("active"));
+  document.querySelector('[data-module="module2"]').classList.add("active");
+  document.getElementById("module2").classList.add("active");
+  toast("IO totals transferred to Controller Selection!", "success");
+});
+
+// ============================================================
+// MODULE 2: MODE SELECTION
+// ============================================================
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active","eng","cost"));
+    btn.classList.add("active", btn.dataset.mode === "engineering" ? "eng" : "cost");
+    state.mode = btn.dataset.mode;
+    saveState();
+  });
+});
+
+document.getElementById("clearCtrlBtn").addEventListener("click", () => {
+  ["c-di","c-do","c-ai","c-ao","c-sft"].forEach(id => document.getElementById(id).value = 0);
+  document.getElementById("ctrlResults").style.display = "none";
+  document.getElementById("ctrlResults").innerHTML = "";
+});
+
+// ============================================================
+// MODULE 2: CONTROLLER SELECTION ALGORITHM
+// ============================================================
+document.getElementById("runSelectionBtn").addEventListener("click", runControllerSelection);
+
+function runControllerSelection() {
+  const DI  = parseInt(document.getElementById("c-di").value) || 0;
+  const DO  = parseInt(document.getElementById("c-do").value) || 0;
+  const AI  = parseInt(document.getElementById("c-ai").value) || 0;
+  const AO  = parseInt(document.getElementById("c-ao").value) || 0;
+  const SFT = parseInt(document.getElementById("c-sft").value) || 0;
+  const mode = state.mode;
+
+  const totalPhysical = DI + DO + AI + AO;
+
+  // ── Select Controller ──────────────────────────────────────
+  // Controller must satisfy: SFT capacity AND (onboardIO + extIO) >= totalPhysical
+  // Engineering mode: pick smallest controller whose total capacity >= requirement
+  // Cost mode: same smallest-first logic (extIO via TXM covers remainder anyway)
+  const sorted = [...CONTROLLERS].sort((a,b) => {
+    const capA = a.DI + a.DO + a.UIO + a.extIO;
+    const capB = b.DI + b.DO + b.UIO + b.extIO;
+    return capA - capB; // smallest first
+  });
+
+  let ctrl = null;
+  for (const c of sorted) {
+    const totalCap = c.DI + c.DO + c.UIO + c.extIO;
+    if (totalCap >= totalPhysical && c.SFT >= SFT) { ctrl = c; break; }
+  }
+  // Fallback: largest controller
+  if (!ctrl) {
+    ctrl = sorted[sorted.length - 1];
+  }
+
+  // ── Allocate Onboard IO ────────────────────────────────────
+  // Priority: DI → onboard DI → UIO as DI
+  //           DO → onboard DO only
+  //           AI → remaining UIO
+  //           AO → remaining UIO
+  let remDI = DI, remDO = DO, remAI = AI, remAO = AO;
+  let remCtrlDI = ctrl.DI, remCtrlDO = ctrl.DO, remCtrlUIO = ctrl.UIO;
+
+  // Step 1: DI — onboard DI first, then UIO
+  const usedOnbDI = Math.min(remDI, remCtrlDI);
+  remDI -= usedOnbDI; remCtrlDI -= usedOnbDI;
+  const usedUioDI = Math.min(remDI, remCtrlUIO);
+  remDI -= usedUioDI; remCtrlUIO -= usedUioDI;
+
+  // Step 2: DO — onboard DO only
+  const usedOnbDO = Math.min(remDO, remCtrlDO);
+  remDO -= usedOnbDO; remCtrlDO -= usedOnbDO;
+
+  // Step 3: AI — remaining UIO
+  const usedUioAI = Math.min(remAI, remCtrlUIO);
+  remAI -= usedUioAI; remCtrlUIO -= usedUioAI;
+
+  // Step 4: AO — remaining UIO
+  const usedUioAO = Math.min(remAO, remCtrlUIO);
+  remAO -= usedUioAO; remCtrlUIO -= usedUioAO;
+
+  // ── TXM Module Allocation ──────────────────────────────────
+  const modules = [];
+  if (mode === "engineering") {
+    allocEngineering(remDI, remDO, remAI, remAO, modules);
+  } else {
+    allocCost(remDI, remDO, remAI, remAO, modules);
+  }
+
+  // ── Rails ──────────────────────────────────────────────────
+  const rails = buildRails(modules, ctrl.maxPwr);
+
+  // ── Address Key ────────────────────────────────────────────
+  const totalModules = modules.reduce((a,m) => a + m.count, 0);
+  const addrKey = getAddressKey(totalModules);
+
+  // ── TXS count = one per rail ───────────────────────────────
+  const txsCount = rails.length;
+
+  renderControllerResults({
+    ctrl, DI, DO, AI, AO, SFT, totalPhysical, mode,
+    usedOnbDI, usedUioDI, usedOnbDO, usedUioAI, usedUioAO,
+    remDI, remDO, remAI, remAO,
+    modules, rails, totalModules, addrKey, txsCount
+  });
+}
+
+// ============================================================
+// ALLOCATION: ENGINEERING MODE
+// Prefer fewer, larger modules. TXM1.4D3R first (cheapest+hybrid),
+// then TXM1.16D > TXM1.8D for DI, TXM1.6R for DO, TXM1.8U for AI/AO
+// ============================================================
+function allocEngineering(remDI, remDO, remAI, remAO, modules) {
+  // 1. Hybrid TXM1.4D3R — use only if BOTH DI and DO needed
+  if (remDI > 0 && remDO > 0) {
+    const h = TXM_MODULES["TXM1.4D3R"]; // 4 DI + 3 DO
+    const hCount = Math.min(Math.floor(remDI / h.DI), Math.floor(remDO / h.DO));
+    if (hCount > 0) {
+      const usedDI = hCount * h.DI, usedDO = hCount * h.DO;
+      modules.push({ name:"TXM1.4D3R", count:hCount, ...h,
+        usedDI, usedDO, spareDI:0, spareDO:0 });
+      remDI -= usedDI; remDO -= usedDO;
+    }
+    // Handle remainder with one more hybrid if needed
+    if (remDI > 0 && remDO > 0 && remDI <= 4 && remDO <= 3) {
+      modules.push({ name:"TXM1.4D3R", count:1, ...TXM_MODULES["TXM1.4D3R"],
+        usedDI:remDI, usedDO:remDO, spareDI:4-remDI, spareDO:3-remDO });
+      remDI = 0; remDO = 0;
+    }
+  }
+
+  // 2. DI — prefer TXM1.16D, use TXM1.8D for remainder ≤ 8
+  if (remDI > 0) {
+    const n16 = Math.floor(remDI / 16);
+    if (n16 > 0) {
+      modules.push({ name:"TXM1.16D", count:n16, ...TXM_MODULES["TXM1.16D"], usedDI:n16*16, spareDI:0 });
+      remDI -= n16 * 16;
+    }
+    if (remDI > 0) {
+      if (remDI > 8) {
+        modules.push({ name:"TXM1.16D", count:1, ...TXM_MODULES["TXM1.16D"], usedDI:remDI, spareDI:16-remDI });
+      } else {
+        modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:remDI, spareDI:8-remDI });
+      }
+      remDI = 0;
+    }
+  }
+
+  // 3. DO — TXM1.6R
+  if (remDO > 0) {
+    const n6 = Math.floor(remDO / 6);
+    if (n6 > 0) {
+      modules.push({ name:"TXM1.6R", count:n6, ...TXM_MODULES["TXM1.6R"], usedDO:n6*6, spareDO:0 });
+      remDO -= n6 * 6;
+    }
+    if (remDO > 0) {
+      modules.push({ name:"TXM1.6R", count:1, ...TXM_MODULES["TXM1.6R"], usedDO:remDO, spareDO:6-remDO });
+      remDO = 0;
+    }
+  }
+
+  // 4. AI + AO via TXM1.8U (UIO: DI priority → AI → AO already handled onboard)
+  const uioForAI = remAI, uioForAO = remAO;
+  const uioNeeded = remAI + remAO;
+  if (uioNeeded > 0) {
+    const nU = Math.ceil(uioNeeded / 8);
+    const spare = nU * 8 - uioNeeded;
+    modules.push({ name:"TXM1.8U", count:nU, ...TXM_MODULES["TXM1.8U"],
+      usedAI:uioForAI, usedAO:uioForAO, spare8u:spare });
+  }
+}
+
+// ============================================================
+// ALLOCATION: COST MODE
+// Use cheapest modules (lowest costRank). TXM1.4D3R (rank 1) first,
+// TXM1.8D (rank 2) > TXM1.16D (rank 3), TXM1.6R (rank 4), TXM1.8U (rank 5)
+// ============================================================
+function allocCost(remDI, remDO, remAI, remAO, modules) {
+  // 1. Hybrid TXM1.4D3R — cheapest, use maximally when both DI+DO needed
+  if (remDI > 0 && remDO > 0) {
+    const h = TXM_MODULES["TXM1.4D3R"];
+    const hCount = Math.max(Math.ceil(remDI / h.DI), Math.ceil(remDO / h.DO));
+    const usedDI = Math.min(remDI, hCount * h.DI);
+    const usedDO = Math.min(remDO, hCount * h.DO);
+    modules.push({ name:"TXM1.4D3R", count:hCount, ...h,
+      usedDI, usedDO, spareDI: hCount*h.DI - usedDI, spareDO: hCount*h.DO - usedDO });
+    remDI -= usedDI; remDO -= usedDO;
+  }
+
+  // 2. DI — prefer TXM1.8D (rank 2, cheaper) over TXM1.16D (rank 3)
+  while (remDI > 0) {
+    if (remDI > 8) {
+      modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:8, spareDI:0 });
+      remDI -= 8;
+    } else {
+      modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:remDI, spareDI:8-remDI });
+      remDI = 0;
+    }
+  }
+
+  // 3. DO — TXM1.6R (only DO module available)
+  while (remDO > 0) {
+    const used = Math.min(remDO, 6);
+    modules.push({ name:"TXM1.6R", count:1, ...TXM_MODULES["TXM1.6R"], usedDO:used, spareDO:6-used });
+    remDO -= used;
+  }
+
+  // 4. AI + AO — TXM1.8U, one at a time
+  let aiLeft = remAI, aoLeft = remAO;
+  while (aiLeft > 0 || aoLeft > 0) {
+    const takeAI = Math.min(aiLeft, 8);
+    const takeAO = Math.min(aoLeft, 8 - takeAI);
+    const used = takeAI + takeAO;
+    modules.push({ name:"TXM1.8U", count:1, ...TXM_MODULES["TXM1.8U"],
+      usedAI:takeAI, usedAO:takeAO, spare8u:8-used });
+    aiLeft -= takeAI; aoLeft -= takeAO;
+  }
+}
+
+// ============================================================
+// BUILD RAILS  (max power from controller spec = maxPwr mA)
+// ============================================================
+function buildRails(modules, maxPwr) {
+  const limit = maxPwr || MAX_RAIL_POWER;
+  const flatMods = [];
+  modules.forEach(m => { for (let i = 0; i < m.count; i++) flatMods.push(m); });
+
+  const rails = [];
+  let rail = { modules:[], power:0 };
+  flatMods.forEach(m => {
+    if (rail.power + m.power > limit) {
+      rails.push(rail);
+      rail = { modules:[], power:0 };
+    }
+    rail.modules.push(m.name);
+    rail.power += m.power;
+  });
+  if (rail.modules.length) rails.push(rail);
+  return rails;
+}
+
+// ============================================================
+// ADDRESS KEY  (exact from Image 2)
+// ============================================================
+function getAddressKey(count) {
+  if (count === 0) return "N/A";
+  // TXA1.5K120: module count is multiple of 5 (address steps of 5: 5,10,15…120)
+  if (count % 5 === 0 && count >= 5 && count <= 120) return "TXA1.5K120";
+  for (const a of ADDRESS_KEY) { if (count <= a.max) return `${a.key}  (${a.note})`; }
+  return "TXA1.K120  (Keys 97–120 + 2 reset keys)";
+}
+
+// ============================================================
+// RENDER CONTROLLER RESULTS
+// ============================================================
+function renderControllerResults(r) {
+  const container = document.getElementById("ctrlResults");
+  container.style.display = "block";
+  container.innerHTML = "";
+
+  // 1. Controller Card
+  const ctrlBlock = document.createElement("div");
+  ctrlBlock.className = "result-block";
+  ctrlBlock.innerHTML = `<h3>Selected Controller</h3>
+    <div class="ctrl-display">
+      <div>
+        <div class="ctrl-name">${r.ctrl.model}</div>
+        <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-top:4px;">${r.ctrl.desc}</div>
+      </div>
+      <div class="ctrl-specs">
+        <div class="ctrl-spec di"><span class="s-label">Onboard DI</span><span class="s-val">${r.ctrl.DI}</span></div>
+        <div class="ctrl-spec do-s"><span class="s-label">Onboard DO</span><span class="s-val">${r.ctrl.DO}</span></div>
+        <div class="ctrl-spec uio"><span class="s-label">Onboard UIO</span><span class="s-val">${r.ctrl.UIO}</span></div>
+        <div class="ctrl-spec" style="border-color:var(--border);"><span class="s-label">Extendable IO</span><span class="s-val" style="color:var(--text-primary);">${r.ctrl.extIO}</span></div>
+        <div class="ctrl-spec sft"><span class="s-label">Soft Points</span><span class="s-val">${r.ctrl.SFT || "No points"}</span></div>
+        <div class="ctrl-spec" style="border-color:var(--border);"><span class="s-label">Max Bus Power</span><span class="s-val" style="color:var(--warning);">${r.ctrl.maxPwr} mA</span></div>
+      </div>
+    </div>`;
+  container.appendChild(ctrlBlock);
+
+  // 2. Onboard IO Allocation
+  const allocBlock = document.createElement("div");
+  allocBlock.className = "result-block";
+  allocBlock.innerHTML = `<h3>Onboard IO Allocation</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>IO Type</th><th>Required</th><th>Onboard Used</th><th>UIO Used</th><th>Remaining (→ Modules)</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-di">DI</span></td><td class="mono">${r.DI}</td><td class="mono">${r.usedOnbDI}</td><td class="mono">${r.usedUioDI}</td><td class="mono ${r.remDI?'text-accent':''}">${r.remDI}</td></tr>
+          <tr><td><span class="badge badge-do">DO</span></td><td class="mono">${r.DO}</td><td class="mono">${r.usedOnbDO}</td><td class="mono">0</td><td class="mono ${r.remDO?'text-accent':''}">${r.remDO}</td></tr>
+          <tr><td><span class="badge badge-ai">AI</span></td><td class="mono">${r.AI}</td><td class="mono">0</td><td class="mono">${r.usedUioAI}</td><td class="mono ${r.remAI?'text-accent':''}">${r.remAI}</td></tr>
+          <tr><td><span class="badge badge-ao">AO</span></td><td class="mono">${r.AO}</td><td class="mono">0</td><td class="mono">${r.usedUioAO}</td><td class="mono ${r.remAO?'text-accent':''}">${r.remAO}</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+  container.appendChild(allocBlock);
+
+  // 3. TXM Module List
+  if (r.modules.length) {
+    const modBlock = document.createElement("div");
+    modBlock.className = "result-block";
+    modBlock.innerHTML = `<h3>TXM Extension Modules (${r.totalModules} total)</h3>`;
+    const list = document.createElement("div");
+    list.className = "module-list";
+    r.modules.forEach(m => {
+      const row = document.createElement("div");
+      row.className = "module-row";
+      let allocText = "", spareText = "";
+
+      if (m.name === "TXM1.16D") {
+        const capPerMod = 16;
+        const usedPerMod = m.count > 0 ? Math.ceil((m.usedDI||0) / m.count) : 0;
+        const sparePerMod = capPerMod - usedPerMod;
+        allocText = `DI: ${m.usedDI||0} used across ${m.count} module(s)`;
+        spareText = `Spare DI: ${Math.max(0, m.count*capPerMod - (m.usedDI||0))}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+
+      } else if (m.name === "TXM1.8D") {
+        const capPerMod = 8;
+        allocText = `DI: ${m.usedDI||0} used across ${m.count} module(s)`;
+        spareText = `Spare DI: ${Math.max(0, m.count*capPerMod - (m.usedDI||0))}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+
+      } else if (m.name === "TXM1.6R") {
+        allocText = `DO: ${m.usedDO||0} used across ${m.count} module(s)`;
+        spareText = `Spare DO: ${Math.max(0, m.count*6 - (m.usedDO||0))}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+
+      } else if (m.name === "TXM1.8U") {
+        allocText = `AI: ${m.usedAI||0}  AO: ${m.usedAO||0}  (UIO capacity: ${m.count*8})`;
+        spareText = `Spare UIO: ${Math.max(0, m.spare8u||0)}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+
+      } else if (m.name === "TXM1.4D3R") {
+        allocText = `DI: ${m.usedDI||0}/${m.count*4}  DO: ${m.usedDO||0}/${m.count*3}`;
+        spareText = `Spare — DI: ${m.spareDI||0}  DO: ${m.spareDO||0}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+      }
+      list.appendChild(row);
+    });
+    modBlock.appendChild(list);
+    container.appendChild(modBlock);
+  } else {
+    const modBlock = document.createElement("div");
+    modBlock.className = "result-block";
+    modBlock.innerHTML = `<h3>TXM Extension Modules</h3><div class="empty-state"><div class="icon">✅</div>No extension modules required — all IO absorbed by controller onboard ports.</div>`;
+    container.appendChild(modBlock);
+  }
+
+  // 4. Rails
+  if (r.rails.length) {
+    const railBlock = document.createElement("div");
+    railBlock.className = "result-block";
+    railBlock.innerHTML = `<h3>Rail Configuration (${r.rails.length} Rail${r.rails.length>1?"s":""})</h3>`;
+    const ctrlMaxPwr = r.ctrl.maxPwr || MAX_RAIL_POWER;
+    r.rails.forEach((rail, idx) => {
+      const pct = Math.min((rail.power / ctrlMaxPwr) * 100, 100);
+      const barClass = pct < 70 ? "ok" : pct < 95 ? "warn" : "over";
+      const rb = document.createElement("div");
+      rb.className = "rail-block";
+      rb.innerHTML = `
+        <div class="rail-header">
+          <div class="rail-title">RAIL ${idx+1}</div>
+          <div class="rail-power">${rail.power} mA / ${ctrlMaxPwr} mA</div>
+        </div>
+        <div class="rail-modules">${rail.modules.map(m=>`<div class="rail-module-tag">${m}</div>`).join("")}</div>
+        <div class="power-bar-wrap"><div class="power-bar ${barClass}" style="width:${pct}%"></div></div>`;
+      railBlock.appendChild(rb);
+    });
+    container.appendChild(railBlock);
+  }
+
+  // 5. Summary Metrics
+  const sumBlock = document.createElement("div");
+  sumBlock.className = "result-block";
+  sumBlock.innerHTML = `<h3>Panel Engineering Summary</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Controller Model</td><td class="mono text-accent">${r.ctrl.model}</td></tr>
+        <tr><td>Total Physical IO</td><td class="mono">${r.totalPhysical}</td></tr>
+        <tr><td>SFT Points</td><td class="mono" style="color:var(--warning)">${r.SFT}</td></tr>
+        <tr><td>Optimization Mode</td><td class="mono">${r.mode.charAt(0).toUpperCase()+r.mode.slice(1)}</td></tr>
+        <tr><td>Total TXM Modules</td><td class="mono">${r.totalModules}</td></tr>
+        <tr><td>Total Rails</td><td class="mono">${r.rails.length}</td></tr>
+        <tr><td>TXS Power Supply Modules</td><td class="mono">${r.txsCount} × TXS1.12F10</td></tr>
+        <tr><td>Bus Module (TXS)</td><td class="mono">${r.txsCount} × TXS1.EF10</td></tr>
+        <tr><td>Address Key</td><td class="mono text-accent">${r.addrKey}</td></tr>
+      </tbody>
+    </table></div>`;
+  container.appendChild(sumBlock);
+
+  toast("Controller selection complete!", "success");
+}
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("installBtn").classList.add("show");
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === "accepted") toast("App installed!", "success");
+  deferredPrompt = null;
+  document.getElementById("installBtn").classList.remove("show");
+});
+
+// ============================================================
+// SERVICE WORKER REGISTRATION
+// ============================================================
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js")
+    .then(() => console.log("SW registered"))
+    .catch(e => console.warn("SW error:", e));
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+// Restore mode button
+document.querySelectorAll(".mode-btn").forEach(b => {
+  if (b.dataset.mode === state.mode) {
+    b.classList.add("active", state.mode === "engineering" ? "eng" : "cost");
+  } else {
+    b.classList.remove("active","eng","cost");
+  }
+});
+renderAll();
+</script>
+</body>
+</html>

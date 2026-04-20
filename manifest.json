@@ -1,0 +1,24 @@
+{
+  "name": "BMS Engineering Suite",
+  "short_name": "BMS Suite",
+  "description": "BMS/HVAC IO Summary Generator & Controller Selection Tool",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#00d4ff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230a0f1e'/><text y='140' font-size='120' text-anchor='middle' x='96'>⚙</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230a0f1e'/><text y='380' font-size='320' text-anchor='middle' x='256'>⚙</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "lang": "en"
+}
