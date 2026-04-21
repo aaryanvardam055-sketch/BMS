@@ -798,7 +798,6 @@ tfoot td.total-ao { color: var(--accent4); }
             <th>DO</th>
             <th>AI</th>
             <th>AO</th>
-            <th>Conclus</th>
             <th>Remarks</th>
           </tr>
         </thead>
@@ -810,7 +809,6 @@ tfoot td.total-ao { color: var(--accent4); }
             <td class="total-do" id="foot-do">0</td>
             <td class="total-ai" id="foot-ai">0</td>
             <td class="total-ao" id="foot-ao">0</td>
-            <td></td>
             <td></td>
           </tr>
         </tfoot>
@@ -881,115 +879,102 @@ tfoot td.total-ao { color: var(--accent4); }
 // DATA: IO DESCRIPTIONS DATABASE
 // ============================================================
 const IO_DATABASE = {
-  // ── Exact data from Image 1 ──
   AHU: [
-    { desc: "AHU ON/OFF Command",        DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
-    { desc: "AHU ON/OFF Status",         DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "AHU Trip Status",           DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "AHU Auto/Manual Status",    DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Return Air Temperature",    DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Supply Air Temperature",    DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "CO₂ Sensor",               DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Humidity Sensor",           DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Filter DP Status",          DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Damper Control",            DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
-    { desc: "Valve Control (CHV Valve)", DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
-    { desc: "VFD Speed Feedback",        DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "VFD Speed Control",         DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
-  ],
-  "Cooling Tower": [
-    { desc: "Cooling Tower Start/Stop",  DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
-    { desc: "Cooling Tower Run Status",  DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Cooling Tower Trip Status", DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Cooling Tower Fan Status",  DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Cooling Tower Temperature", DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Basin Level",               DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
+    { desc: "AHU ON/OFF Command",          DI:0, DO:1, AI:0, AO:0 },
+    { desc: "Fan Run Status (DI)",          DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Fan Trip/Fault Status",        DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Filter Dirty Status",          DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Fire Stat Input",              DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Smoke Detector Input",         DI:1, DO:0, AI:0, AO:0 },
+    { desc: "High Static Pressure Switch",  DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Low Static Pressure Switch",   DI:1, DO:0, AI:0, AO:0 },
+    { desc: "CHW Valve Control (AO)",       DI:0, DO:0, AI:0, AO:1 },
+    { desc: "HHW Valve Control (AO)",       DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Supply Air Temp Sensor (AI)",  DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Return Air Temp Sensor (AI)",  DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Supply Air Humidity (AI)",     DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CO2 Sensor Supply (AI)",       DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Fan Speed Control (AO)",       DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Outdoor Air Damper (AO)",      DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Supply Air Pressure (AI)",     DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Return Air Pressure (AI)",     DI:0, DO:0, AI:1, AO:0 },
   ],
   Pump: [
-    { desc: "Pump ON/OFF Command",       DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
-    { desc: "Pump ON/OFF Status",        DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Pump Trip Indication",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Pump Auto/Manual Status",   DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Pump Feedback Status",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
+    { desc: "Pump Start/Stop Command",      DI:0, DO:1, AI:0, AO:0 },
+    { desc: "Pump Run Status (DI)",         DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Pump Trip/Fault Status",       DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Pump Auto/Manual Status",      DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Differential Pressure (AI)",   DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Flow Meter (AI)",              DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Pump Speed Control (AO)",      DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Suction Pressure (AI)",        DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Discharge Pressure (AI)",      DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Standby Pump Changeover",      DI:0, DO:1, AI:0, AO:0 },
   ],
   Chiller: [
-    { desc: "Chiller ON/OFF Command",    DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
-    { desc: "Chiller ON/OFF Status",     DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Chiller Trip Status",       DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Chiller Alarm Status",      DI:1, DO:0, AI:0, AO:0, conclus:"DI", remark:"Potential free contact" },
-    { desc: "Chiller Fault Reset",       DI:0, DO:1, AI:0, AO:0, conclus:"DO", remark:"Relay Command" },
-    { desc: "Leaving Water Temperature", DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Entering Water Temperature",DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Chilled Water Flow",        DI:0, DO:0, AI:1, AO:0, conclus:"AI", remark:"4-20mA / 0-10V Input" },
-    { desc: "Modulating Valve Control",  DI:0, DO:0, AI:0, AO:1, conclus:"AO", remark:"4-20mA / 0-10V Output" },
+    { desc: "Chiller ON/OFF Command",       DI:0, DO:1, AI:0, AO:0 },
+    { desc: "Chiller Run Status (DI)",      DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Chiller Fault/Alarm Status",   DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Chiller Ready Status",         DI:1, DO:0, AI:0, AO:0 },
+    { desc: "CHW Supply Temp (AI)",         DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CHW Return Temp (AI)",         DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CW Supply Temp (AI)",          DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CW Return Temp (AI)",          DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Chiller Load %  (AI)",         DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CHW Setpoint (AO)",            DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Cooling Demand Signal (AO)",   DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Compressor Status (DI)",       DI:1, DO:0, AI:0, AO:0 },
+  ],
+  "Cooling Tower": [
+    { desc: "Fan Start/Stop Command",       DI:0, DO:1, AI:0, AO:0 },
+    { desc: "Fan Run Status (DI)",          DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Fan Fault/Trip Status",        DI:1, DO:0, AI:0, AO:0 },
+    { desc: "High Level Switch (DI)",       DI:1, DO:0, AI:0, AO:0 },
+    { desc: "Low Level Switch (DI)",        DI:1, DO:0, AI:0, AO:0 },
+    { desc: "CW Supply Temp (AI)",          DI:0, DO:0, AI:1, AO:0 },
+    { desc: "CW Return Temp (AI)",          DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Sump Water Level (AI)",        DI:0, DO:0, AI:1, AO:0 },
+    { desc: "Fan Speed Control (AO)",       DI:0, DO:0, AI:0, AO:1 },
+    { desc: "Bleed Valve Command",          DI:0, DO:1, AI:0, AO:0 },
+    { desc: "Make-Up Water Valve",          DI:0, DO:1, AI:0, AO:0 },
   ],
 };
 
-// Remarks come directly from each IO_DATABASE entry's .remark field
 const REMARKS = {
   DI: "Potential free contact",
-  DO: "Relay Command",
-  AI: "4-20mA / 0-10V Input",
-  AO: "4-20mA / 0-10V Output",
+  DO: "Relay command",
+  AI: "4-20mA / 0-10V input",
+  AO: "4-20mA / 0-10V output",
 };
 
 // ============================================================
-// DATA: CONTROLLERS DATABASE  (exact from Image 2)
+// DATA: CONTROLLERS DATABASE
 // ============================================================
-// Onboard IO columns: DI / DO / UIO
-// Extendable IO = max additional IO via TXM modules
-// Soft Integration = SFT soft points
-// Power Supply Max to TXM = max mA to bus (all = 300 mA)
 const CONTROLLERS = [
-  // model              DI   DO  UIO  extIO  SFT   maxPwr  desc
-  { model:"PXC4.E16S-2",  DI:16, DO:0,  UIO:4,  extIO:50,  SFT:0,    maxPwr:300, desc:"16 DI, 4 DO onboard" },
-  { model:"PXC4.E16-2/M16",DI:16,DO:0,  UIO:4,  extIO:50,  SFT:40,   maxPwr:300, desc:"16 DI, 4 DO, 40 SFT" },
-  { model:"PXC5.E24/E24-N",DI:24, DO:2,  UIO:6,  extIO:80,  SFT:120,  maxPwr:300, desc:"24 DI, 2 DO, 6 UIO" },
-  { model:"PXC7.E400S",   DI:1,  DO:0,  UIO:0,  extIO:100, SFT:100,  maxPwr:300, desc:"Compact, 100 extIO" },
-  { model:"PXC7.E400M",   DI:1,  DO:0,  UIO:0,  extIO:200, SFT:250,  maxPwr:300, desc:"Medium, 200 extIO" },
-  { model:"PXC7.E400L",   DI:1,  DO:0,  UIO:0,  extIO:400, SFT:600,  maxPwr:300, desc:"Large, 400 extIO" },
-  { model:"PXC5.E003",    DI:1,  DO:0,  UIO:0,  extIO:0,   SFT:2000, maxPwr:300, desc:"Software only, 2000 SFT" },
+  { model: "PXC36",   DI:12, DO:6,  UIO:0,  SFT:200,  desc:"Compact controller" },
+  { model: "PXC50",   DI:8,  DO:6,  UIO:8,  SFT:350,  desc:"Universal IO controller" },
+  { model: "PXC64",   DI:16, DO:8,  UIO:8,  SFT:600,  desc:"Mid-range controller" },
+  { model: "PXC100",  DI:20, DO:12, UIO:12, SFT:1000, desc:"Large controller" },
+  { model: "PXC200",  DI:32, DO:16, UIO:16, SFT:2000, desc:"High-capacity controller" },
 ];
 
-// ============================================================
-// DATA: TXM MODULES  (exact from Image 2)
-// ============================================================
-// costRank: lower = cheaper (TXM1.4D3R=1 cheapest, TXM1.8X=6 most expensive)
 const TXM_MODULES = {
-  "TXM1.8D":   { DI:8,  DO:0, AI:0, AO:0, UIO:0, XIO:0, power:53, costRank:2, type:"DI" },
-  "TXM1.16D":  { DI:16, DO:0, AI:0, AO:0, UIO:0, XIO:0, power:65, costRank:3, type:"DI" },
-  "TXM1.8U":   { DI:0,  DO:0, AI:0, AO:0, UIO:8, XIO:0, power:59, costRank:5, type:"UIO" },
-  "TXM1.8X":   { DI:0,  DO:0, AI:0, AO:0, UIO:0, XIO:8, power:230,costRank:6, type:"XIO" },
-  "TXM1.6R":   { DI:0,  DO:6, AI:0, AO:0, UIO:0, XIO:0, power:68, costRank:4, type:"DO" },
-  "TXM1.4D3R": { DI:4,  DO:3, AI:0, AO:0, UIO:0, XIO:0, power:42, costRank:1, type:"HYBRID" },
+  "TXM1.16D":  { DI:16, DO:0,  UIO:0, power:40,  type:"DI" },
+  "TXM1.8D":   { DI:8,  DO:0,  UIO:0, power:25,  type:"DI" },
+  "TXM1.6R":   { DI:0,  DO:6,  UIO:0, power:40,  type:"DO" },
+  "TXM1.8U":   { DI:0,  DO:0,  UIO:8, power:35,  type:"UIO" },
+  "TXM1.4D3R": { DI:4,  DO:3,  UIO:0, power:30,  type:"HYBRID" },
 };
 
-// TXS modules from Image 2
-const TXS_MODULES = {
-  "TXS1.12F10": { type:"Power Supply Module",      currentRating:"1.2 A" },
-  "TXS1.EF10":  { type:"Bus Communication Module", currentRating:"0" },
-};
+const MAX_RAIL_POWER = 280;
 
-// Max power supply to TXM bus per controller = 300 mA (from Image 2)
-const MAX_RAIL_POWER = 300;
-
-// ============================================================
-// DATA: ADDRESS KEY  (exact from Image 2)
-// ============================================================
-// TXA1.K12   → keys 1–12     + reset key
-// TXA1.K24   → keys 1–24     + 2 reset keys
-// TXA1.K48   → keys 25–48    + 2 reset keys
-// TXA1.K72   → keys 49–72    + 2 reset keys
-// TXA1.K96   → keys 73–96    + 2 reset keys
-// TXA1.K120  → keys 97–120   + 2 reset keys
-// TXA1.5K120 → keys 5,10,15…120 + 2 reset keys
 const ADDRESS_KEY = [
-  { max:12,  key:"TXA1.K12",   note:"Keys 1–12 + reset key" },
-  { max:24,  key:"TXA1.K24",   note:"Keys 1–24 + 2 reset keys" },
-  { max:48,  key:"TXA1.K48",   note:"Keys 25–48 + 2 reset keys" },
-  { max:72,  key:"TXA1.K72",   note:"Keys 49–72 + 2 reset keys" },
-  { max:96,  key:"TXA1.K96",   note:"Keys 73–96 + 2 reset keys" },
-  { max:120, key:"TXA1.K120",  note:"Keys 97–120 + 2 reset keys" },
+  { max:12,  key:"TXA1.K12" },
+  { max:24,  key:"TXA1.K24" },
+  { max:48,  key:"TXA1.K48" },
+  { max:72,  key:"TXA1.K72" },
+  { max:96,  key:"TXA1.K96" },
+  { max:120, key:"TXA1.K120" },
 ];
 
 // ============================================================
@@ -1319,11 +1304,11 @@ function renderSummaryTable() {
 
   rows.forEach(r => {
     const tr = document.createElement("tr");
-    // Use the exact remark from the database entry
-    const remarkText = r.remark || "";
-    const conclusBadge = r.conclus
-      ? `<span class="badge badge-${r.conclus.toLowerCase().replace('do','do')}">${r.conclus}</span>`
-      : "";
+    const remarks = [];
+    if (r.DI) remarks.push(REMARKS.DI);
+    if (r.DO) remarks.push(REMARKS.DO);
+    if (r.AI) remarks.push(REMARKS.AI);
+    if (r.AO) remarks.push(REMARKS.AO);
 
     tr.innerHTML = `
       <td class="mono">${rowNum++}</td>
@@ -1335,8 +1320,7 @@ function renderSummaryTable() {
       <td class="center">${r.DO ? `<span class="badge badge-do">${r.DO}</span>` : "-"}</td>
       <td class="center">${r.AI ? `<span class="badge badge-ai">${r.AI}</span>` : "-"}</td>
       <td class="center">${r.AO ? `<span class="badge badge-ao">${r.AO}</span>` : "-"}</td>
-      <td class="center">${conclusBadge}</td>
-      <td class="remarks">${remarkText}</td>`;
+      <td class="remarks">${remarks.join("; ")}</td>`;
     tbody.appendChild(tr);
 
     totDI+=r.DI; totDO+=r.DO; totAI+=r.AI; totAO+=r.AO;
@@ -1359,11 +1343,7 @@ function collectTableRows() {
         const descs = (data.instances && data.instances[instKey]) || [];
         descs.forEach(desc => {
           const entry = IO_DATABASE[comp].find(e => e.desc === desc);
-          if (entry) rows.push({
-            subLoc: sl.name, comp, instance: instKey, desc,
-            DI: entry.DI, DO: entry.DO, AI: entry.AI, AO: entry.AO,
-            conclus: entry.conclus || "", remark: entry.remark || ""
-          });
+          if (entry) rows.push({ subLoc: sl.name, comp, instance: instKey, desc, DI: entry.DI, DO: entry.DO, AI: entry.AI, AO: entry.AO });
         });
       }
     });
@@ -1385,15 +1365,16 @@ document.getElementById("exportExcelBtn").addEventListener("click", () => {
   const wb = XLSX.utils.book_new();
 
   // IO Summary sheet
-  const dataArr = [["#","Sub-Location","Component","Instance","Description","DI","DO","AI","AO","Conclus","Remarks"]];
+  const dataArr = [["#","Sub-Location","Component","Instance","Description","DI","DO","AI","AO","Remarks"]];
   let tot={DI:0,DO:0,AI:0,AO:0};
   rows.forEach((r,i) => {
-    dataArr.push([i+1, r.subLoc, r.comp, r.instance, r.desc,
-      r.DI||"", r.DO||"", r.AI||"", r.AO||"",
-      r.conclus||"", r.remark||""]);
+    const rem = [];
+    if(r.DI) rem.push(REMARKS.DI); if(r.DO) rem.push(REMARKS.DO);
+    if(r.AI) rem.push(REMARKS.AI); if(r.AO) rem.push(REMARKS.AO);
+    dataArr.push([i+1,r.subLoc,r.comp,r.instance,r.desc,r.DI||"",r.DO||"",r.AI||"",r.AO||"",rem.join("; ")]);
     tot.DI+=r.DI; tot.DO+=r.DO; tot.AI+=r.AI; tot.AO+=r.AO;
   });
-  dataArr.push(["","","","","TOTAL",tot.DI,tot.DO,tot.AI,tot.AO,"",""]);
+  dataArr.push(["","","","","TOTAL",tot.DI,tot.DO,tot.AI,tot.AO,""]);
   const ws = XLSX.utils.aoa_to_sheet(dataArr);
   ws["!cols"] = [4,18,14,12,40,5,5,5,5,30].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb, ws, "IO Summary");
@@ -1470,70 +1451,65 @@ function runControllerSelection() {
 
   const totalPhysical = DI + DO + AI + AO;
 
-  // ── Select Controller ──────────────────────────────────────
-  // Controller must satisfy: SFT capacity AND (onboardIO + extIO) >= totalPhysical
-  // Engineering mode: pick smallest controller whose total capacity >= requirement
-  // Cost mode: same smallest-first logic (extIO via TXM covers remainder anyway)
-  const sorted = [...CONTROLLERS].sort((a,b) => {
-    const capA = a.DI + a.DO + a.UIO + a.extIO;
-    const capB = b.DI + b.DO + b.UIO + b.extIO;
-    return capA - capB; // smallest first
+  // --- Select Controller ---
+  const eligibleCtrl = CONTROLLERS.filter(c =>
+    (c.DI + c.DO + c.UIO) >= 1 && c.SFT >= SFT
+  ).sort((a,b) => {
+    const capA = a.DI + a.DO + a.UIO;
+    const capB = b.DI + b.DO + b.UIO;
+    if (mode === "engineering") return capB - capA;
+    return capA - capB;
   });
 
   let ctrl = null;
-  for (const c of sorted) {
-    const totalCap = c.DI + c.DO + c.UIO + c.extIO;
-    if (totalCap >= totalPhysical && c.SFT >= SFT) { ctrl = c; break; }
+  for (const c of eligibleCtrl) {
+    const maxIO = c.DI + c.DO + c.UIO;
+    if (c.SFT >= SFT) { ctrl = c; if (maxIO >= totalPhysical) break; }
   }
-  // Fallback: largest controller
-  if (!ctrl) {
-    ctrl = sorted[sorted.length - 1];
-  }
+  if (!ctrl) { ctrl = CONTROLLERS[CONTROLLERS.length-1]; }
 
-  // ── Allocate Onboard IO ────────────────────────────────────
-  // Priority: DI → onboard DI → UIO as DI
-  //           DO → onboard DO only
-  //           AI → remaining UIO
-  //           AO → remaining UIO
+  // --- Allocate Onboard IO ---
   let remDI = DI, remDO = DO, remAI = AI, remAO = AO;
   let remCtrlDI = ctrl.DI, remCtrlDO = ctrl.DO, remCtrlUIO = ctrl.UIO;
 
-  // Step 1: DI — onboard DI first, then UIO
+  // Step 1: DI → onboard DI first, then UIO
   const usedOnbDI = Math.min(remDI, remCtrlDI);
   remDI -= usedOnbDI; remCtrlDI -= usedOnbDI;
   const usedUioDI = Math.min(remDI, remCtrlUIO);
   remDI -= usedUioDI; remCtrlUIO -= usedUioDI;
 
-  // Step 2: DO — onboard DO only
+  // Step 2: DO → onboard DO only
   const usedOnbDO = Math.min(remDO, remCtrlDO);
   remDO -= usedOnbDO; remCtrlDO -= usedOnbDO;
 
-  // Step 3: AI — remaining UIO
+  // Step 3: AI → remaining UIO
   const usedUioAI = Math.min(remAI, remCtrlUIO);
   remAI -= usedUioAI; remCtrlUIO -= usedUioAI;
 
-  // Step 4: AO — remaining UIO
+  // Step 4: AO → remaining UIO
   const usedUioAO = Math.min(remAO, remCtrlUIO);
   remAO -= usedUioAO; remCtrlUIO -= usedUioAO;
 
-  // ── TXM Module Allocation ──────────────────────────────────
+  // --- Module Selection ---
   const modules = [];
+
   if (mode === "engineering") {
     allocEngineering(remDI, remDO, remAI, remAO, modules);
   } else {
     allocCost(remDI, remDO, remAI, remAO, modules);
   }
 
-  // ── Rails ──────────────────────────────────────────────────
-  const rails = buildRails(modules, ctrl.maxPwr);
+  // --- Rail allocation ---
+  const rails = buildRails(modules);
 
-  // ── Address Key ────────────────────────────────────────────
+  // --- Address Key ---
   const totalModules = modules.reduce((a,m) => a + m.count, 0);
   const addrKey = getAddressKey(totalModules);
 
-  // ── TXS count = one per rail ───────────────────────────────
+  // --- TXS (power supplies) ---
   const txsCount = rails.length;
 
+  // --- Render ---
   renderControllerResults({
     ctrl, DI, DO, AI, AO, SFT, totalPhysical, mode,
     usedOnbDI, usedUioDI, usedOnbDO, usedUioAI, usedUioAO,
@@ -1544,128 +1520,93 @@ function runControllerSelection() {
 
 // ============================================================
 // ALLOCATION: ENGINEERING MODE
-// Prefer fewer, larger modules. TXM1.4D3R first (cheapest+hybrid),
-// then TXM1.16D > TXM1.8D for DI, TXM1.6R for DO, TXM1.8U for AI/AO
 // ============================================================
 function allocEngineering(remDI, remDO, remAI, remAO, modules) {
-  // 1. Hybrid TXM1.4D3R — use only if BOTH DI and DO needed
+  // Hybrid first if both DI and DO remain
   if (remDI > 0 && remDO > 0) {
-    const h = TXM_MODULES["TXM1.4D3R"]; // 4 DI + 3 DO
-    const hCount = Math.min(Math.floor(remDI / h.DI), Math.floor(remDO / h.DO));
+    const h = TXM_MODULES["TXM1.4D3R"];
+    const hCount = Math.floor(Math.min(remDI / h.DI, remDO / h.DO));
     if (hCount > 0) {
       const usedDI = hCount * h.DI, usedDO = hCount * h.DO;
-      modules.push({ name:"TXM1.4D3R", count:hCount, ...h,
-        usedDI, usedDO, spareDI:0, spareDO:0 });
+      modules.push({ name:"TXM1.4D3R", count:hCount, ...h, usedDI, usedDO, spareDI: hCount*h.DI - usedDI, spareDO: hCount*h.DO - usedDO });
       remDI -= usedDI; remDO -= usedDO;
     }
-    // Handle remainder with one more hybrid if needed
-    if (remDI > 0 && remDO > 0 && remDI <= 4 && remDO <= 3) {
-      modules.push({ name:"TXM1.4D3R", count:1, ...TXM_MODULES["TXM1.4D3R"],
-        usedDI:remDI, usedDO:remDO, spareDI:4-remDI, spareDO:3-remDO });
-      remDI = 0; remDO = 0;
-    }
   }
-
-  // 2. DI — prefer TXM1.16D, use TXM1.8D for remainder ≤ 8
+  // DI: prefer 16D
   if (remDI > 0) {
     const n16 = Math.floor(remDI / 16);
-    if (n16 > 0) {
-      modules.push({ name:"TXM1.16D", count:n16, ...TXM_MODULES["TXM1.16D"], usedDI:n16*16, spareDI:0 });
-      remDI -= n16 * 16;
-    }
-    if (remDI > 0) {
-      if (remDI > 8) {
-        modules.push({ name:"TXM1.16D", count:1, ...TXM_MODULES["TXM1.16D"], usedDI:remDI, spareDI:16-remDI });
-      } else {
-        modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:remDI, spareDI:8-remDI });
-      }
-      remDI = 0;
+    const left = remDI % 16;
+    if (n16) { modules.push({ name:"TXM1.16D", count:n16, ...TXM_MODULES["TXM1.16D"], usedDI:n16*16, spareDI:0 }); remDI = left; }
+    if (left > 0) {
+      if (left > 8) { modules.push({ name:"TXM1.16D", count:1, ...TXM_MODULES["TXM1.16D"], usedDI:left, spareDI:16-left }); remDI=0; }
+      else { modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:left, spareDI:8-left }); remDI=0; }
     }
   }
-
-  // 3. DO — TXM1.6R
+  // DO: prefer 6R
   if (remDO > 0) {
     const n6 = Math.floor(remDO / 6);
-    if (n6 > 0) {
-      modules.push({ name:"TXM1.6R", count:n6, ...TXM_MODULES["TXM1.6R"], usedDO:n6*6, spareDO:0 });
-      remDO -= n6 * 6;
-    }
-    if (remDO > 0) {
-      modules.push({ name:"TXM1.6R", count:1, ...TXM_MODULES["TXM1.6R"], usedDO:remDO, spareDO:6-remDO });
-      remDO = 0;
-    }
+    const left = remDO % 6;
+    if (n6) { modules.push({ name:"TXM1.6R", count:n6, ...TXM_MODULES["TXM1.6R"], usedDO:n6*6, spareDO:0 }); remDO=left; }
+    if (left > 0) { modules.push({ name:"TXM1.6R", count:1, ...TXM_MODULES["TXM1.6R"], usedDO:left, spareDO:6-left }); remDO=0; }
   }
-
-  // 4. AI + AO via TXM1.8U (UIO: DI priority → AI → AO already handled onboard)
-  const uioForAI = remAI, uioForAO = remAO;
-  const uioNeeded = remAI + remAO;
+  // AI + AO via UIO (TXM1.8U)
+  let uioNeeded = 0, uioForAI = 0, uioForAO = 0;
+  if (remAI > 0) { uioForAI = remAI; uioNeeded += remAI; remAI = 0; }
+  if (remAO > 0) { uioForAO = remAO; uioNeeded += remAO; remAO = 0; }
   if (uioNeeded > 0) {
     const nU = Math.ceil(uioNeeded / 8);
-    const spare = nU * 8 - uioNeeded;
-    modules.push({ name:"TXM1.8U", count:nU, ...TXM_MODULES["TXM1.8U"],
-      usedAI:uioForAI, usedAO:uioForAO, spare8u:spare });
+    const spare = nU*8 - uioNeeded;
+    modules.push({ name:"TXM1.8U", count:nU, ...TXM_MODULES["TXM1.8U"], usedAI:uioForAI, usedAO:uioForAO, spare8u:spare });
   }
 }
 
 // ============================================================
 // ALLOCATION: COST MODE
-// Use cheapest modules (lowest costRank). TXM1.4D3R (rank 1) first,
-// TXM1.8D (rank 2) > TXM1.16D (rank 3), TXM1.6R (rank 4), TXM1.8U (rank 5)
 // ============================================================
 function allocCost(remDI, remDO, remAI, remAO, modules) {
-  // 1. Hybrid TXM1.4D3R — cheapest, use maximally when both DI+DO needed
+  // Hybrid first if both
   if (remDI > 0 && remDO > 0) {
     const h = TXM_MODULES["TXM1.4D3R"];
-    const hCount = Math.max(Math.ceil(remDI / h.DI), Math.ceil(remDO / h.DO));
-    const usedDI = Math.min(remDI, hCount * h.DI);
-    const usedDO = Math.min(remDO, hCount * h.DO);
-    modules.push({ name:"TXM1.4D3R", count:hCount, ...h,
-      usedDI, usedDO, spareDI: hCount*h.DI - usedDI, spareDO: hCount*h.DO - usedDO });
-    remDI -= usedDI; remDO -= usedDO;
-  }
-
-  // 2. DI — prefer TXM1.8D (rank 2, cheaper) over TXM1.16D (rank 3)
-  while (remDI > 0) {
-    if (remDI > 8) {
-      modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:8, spareDI:0 });
-      remDI -= 8;
-    } else {
-      modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:remDI, spareDI:8-remDI });
-      remDI = 0;
+    const maxH = Math.min(Math.ceil(remDI/h.DI), Math.ceil(remDO/h.DO));
+    if (maxH > 0) {
+      const usedDI = Math.min(remDI, maxH*h.DI), usedDO = Math.min(remDO, maxH*h.DO);
+      modules.push({ name:"TXM1.4D3R", count:maxH, ...h, usedDI, usedDO, spareDI: maxH*h.DI-usedDI, spareDO:maxH*h.DO-usedDO });
+      remDI -= usedDI; remDO -= usedDO;
     }
   }
-
-  // 3. DO — TXM1.6R (only DO module available)
+  // DI: prefer 8D
+  while (remDI > 0) {
+    if (remDI > 8) { modules.push({ name:"TXM1.16D", count:1, ...TXM_MODULES["TXM1.16D"], usedDI:16, spareDI:0 }); remDI-=16; }
+    else { modules.push({ name:"TXM1.8D", count:1, ...TXM_MODULES["TXM1.8D"], usedDI:remDI, spareDI:8-remDI }); remDI=0; }
+  }
+  // DO
   while (remDO > 0) {
-    const used = Math.min(remDO, 6);
+    const used = Math.min(remDO,6);
     modules.push({ name:"TXM1.6R", count:1, ...TXM_MODULES["TXM1.6R"], usedDO:used, spareDO:6-used });
     remDO -= used;
   }
-
-  // 4. AI + AO — TXM1.8U, one at a time
-  let aiLeft = remAI, aoLeft = remAO;
-  while (aiLeft > 0 || aoLeft > 0) {
-    const takeAI = Math.min(aiLeft, 8);
-    const takeAO = Math.min(aoLeft, 8 - takeAI);
-    const used = takeAI + takeAO;
-    modules.push({ name:"TXM1.8U", count:1, ...TXM_MODULES["TXM1.8U"],
-      usedAI:takeAI, usedAO:takeAO, spare8u:8-used });
-    aiLeft -= takeAI; aoLeft -= takeAO;
+  // AI+AO via UIO
+  let uioNeeded = remAI + remAO;
+  const uioForAI = remAI, uioForAO = remAO;
+  while (uioNeeded > 0) {
+    const used = Math.min(uioNeeded, 8);
+    modules.push({ name:"TXM1.8U", count:1, ...TXM_MODULES["TXM1.8U"], usedAI:Math.min(uioForAI,8), usedAO:Math.min(uioForAO,8), spare8u:8-used });
+    uioNeeded -= used;
   }
 }
 
 // ============================================================
-// BUILD RAILS  (max power from controller spec = maxPwr mA)
+// BUILD RAILS
 // ============================================================
-function buildRails(modules, maxPwr) {
-  const limit = maxPwr || MAX_RAIL_POWER;
+function buildRails(modules) {
   const flatMods = [];
-  modules.forEach(m => { for (let i = 0; i < m.count; i++) flatMods.push(m); });
+  modules.forEach(m => { for(let i=0;i<m.count;i++) flatMods.push(m); });
 
   const rails = [];
   let rail = { modules:[], power:0 };
+
   flatMods.forEach(m => {
-    if (rail.power + m.power > limit) {
+    if (rail.power + m.power > MAX_RAIL_POWER) {
       rails.push(rail);
       rail = { modules:[], power:0 };
     }
@@ -1677,14 +1618,13 @@ function buildRails(modules, maxPwr) {
 }
 
 // ============================================================
-// ADDRESS KEY  (exact from Image 2)
+// ADDRESS KEY
 // ============================================================
 function getAddressKey(count) {
   if (count === 0) return "N/A";
-  // TXA1.5K120: module count is multiple of 5 (address steps of 5: 5,10,15…120)
-  if (count % 5 === 0 && count >= 5 && count <= 120) return "TXA1.5K120";
-  for (const a of ADDRESS_KEY) { if (count <= a.max) return `${a.key}  (${a.note})`; }
-  return "TXA1.K120  (Keys 97–120 + 2 reset keys)";
+  if (count % 5 === 0 && count >= 5) return "TXA1.5K120";
+  for (const a of ADDRESS_KEY) { if (count <= a.max) return a.key; }
+  return "TXA1.K120";
 }
 
 // ============================================================
@@ -1700,17 +1640,12 @@ function renderControllerResults(r) {
   ctrlBlock.className = "result-block";
   ctrlBlock.innerHTML = `<h3>Selected Controller</h3>
     <div class="ctrl-display">
-      <div>
-        <div class="ctrl-name">${r.ctrl.model}</div>
-        <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-top:4px;">${r.ctrl.desc}</div>
-      </div>
+      <div class="ctrl-name">${r.ctrl.model}</div>
       <div class="ctrl-specs">
         <div class="ctrl-spec di"><span class="s-label">Onboard DI</span><span class="s-val">${r.ctrl.DI}</span></div>
         <div class="ctrl-spec do-s"><span class="s-label">Onboard DO</span><span class="s-val">${r.ctrl.DO}</span></div>
         <div class="ctrl-spec uio"><span class="s-label">Onboard UIO</span><span class="s-val">${r.ctrl.UIO}</span></div>
-        <div class="ctrl-spec" style="border-color:var(--border);"><span class="s-label">Extendable IO</span><span class="s-val" style="color:var(--text-primary);">${r.ctrl.extIO}</span></div>
-        <div class="ctrl-spec sft"><span class="s-label">Soft Points</span><span class="s-val">${r.ctrl.SFT || "No points"}</span></div>
-        <div class="ctrl-spec" style="border-color:var(--border);"><span class="s-label">Max Bus Power</span><span class="s-val" style="color:var(--warning);">${r.ctrl.maxPwr} mA</span></div>
+        <div class="ctrl-spec sft"><span class="s-label">SFT Capacity</span><span class="s-val">${r.ctrl.SFT}</span></div>
       </div>
     </div>`;
   container.appendChild(ctrlBlock);
@@ -1742,36 +1677,23 @@ function renderControllerResults(r) {
     r.modules.forEach(m => {
       const row = document.createElement("div");
       row.className = "module-row";
-      let allocText = "", spareText = "";
-
-      if (m.name === "TXM1.16D") {
-        const capPerMod = 16;
-        const usedPerMod = m.count > 0 ? Math.ceil((m.usedDI||0) / m.count) : 0;
-        const sparePerMod = capPerMod - usedPerMod;
-        allocText = `DI: ${m.usedDI||0} used across ${m.count} module(s)`;
-        spareText = `Spare DI: ${Math.max(0, m.count*capPerMod - (m.usedDI||0))}`;
-        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
-
-      } else if (m.name === "TXM1.8D") {
-        const capPerMod = 8;
-        allocText = `DI: ${m.usedDI||0} used across ${m.count} module(s)`;
-        spareText = `Spare DI: ${Math.max(0, m.count*capPerMod - (m.usedDI||0))}`;
-        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
-
-      } else if (m.name === "TXM1.6R") {
-        allocText = `DO: ${m.usedDO||0} used across ${m.count} module(s)`;
-        spareText = `Spare DO: ${Math.max(0, m.count*6 - (m.usedDO||0))}`;
-        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
-
-      } else if (m.name === "TXM1.8U") {
-        allocText = `AI: ${m.usedAI||0}  AO: ${m.usedAO||0}  (UIO capacity: ${m.count*8})`;
-        spareText = `Spare UIO: ${Math.max(0, m.spare8u||0)}`;
-        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
-
-      } else if (m.name === "TXM1.4D3R") {
-        allocText = `DI: ${m.usedDI||0}/${m.count*4}  DO: ${m.usedDO||0}/${m.count*3}`;
-        spareText = `Spare — DI: ${m.spareDI||0}  DO: ${m.spareDO||0}`;
-        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">${spareText}</div><div class="module-power">${m.power} mA each</div>`;
+      let allocText = "";
+      if (m.name==="TXM1.16D"||m.name==="TXM1.8D") {
+        const di = m.DI||16;
+        allocText = `DI: ${m.usedDI||0}/${di} per module`;
+        const spare = di - (m.usedDI||0)/m.count;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">Spare DI: ${spare>0?Math.floor(spare):0}/module</div><div class="module-power">${m.power} mA each</div>`;
+      } else if (m.name==="TXM1.6R") {
+        const di = m.DO||6;
+        allocText = `DO: ${m.usedDO||0}/${di} per module`;
+        const spare = di - (m.usedDO||0)/m.count;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">Spare DO: ${spare>0?Math.floor(spare):0}/module</div><div class="module-power">${m.power} mA each</div>`;
+      } else if (m.name==="TXM1.8U") {
+        allocText = `AI: ${m.usedAI||0}, AO: ${m.usedAO||0} across ${m.count} module(s)`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">Spare UIO: ${m.spare8u||0}</div><div class="module-power">${m.power} mA each</div>`;
+      } else if (m.name==="TXM1.4D3R") {
+        allocText = `DI: ${m.usedDI||0}/${m.count*4}, DO: ${m.usedDO||0}/${m.count*3}`;
+        row.innerHTML = `<div class="module-tag">${m.name} ×${m.count}</div><div class="module-alloc">${allocText}</div><div class="module-spare">Spare DI:${m.spareDI||0} DO:${m.spareDO||0}</div><div class="module-power">${m.power} mA each</div>`;
       }
       list.appendChild(row);
     });
@@ -1789,16 +1711,15 @@ function renderControllerResults(r) {
     const railBlock = document.createElement("div");
     railBlock.className = "result-block";
     railBlock.innerHTML = `<h3>Rail Configuration (${r.rails.length} Rail${r.rails.length>1?"s":""})</h3>`;
-    const ctrlMaxPwr = r.ctrl.maxPwr || MAX_RAIL_POWER;
     r.rails.forEach((rail, idx) => {
-      const pct = Math.min((rail.power / ctrlMaxPwr) * 100, 100);
+      const pct = Math.min((rail.power / MAX_RAIL_POWER) * 100, 100);
       const barClass = pct < 70 ? "ok" : pct < 95 ? "warn" : "over";
       const rb = document.createElement("div");
       rb.className = "rail-block";
       rb.innerHTML = `
         <div class="rail-header">
           <div class="rail-title">RAIL ${idx+1}</div>
-          <div class="rail-power">${rail.power} mA / ${ctrlMaxPwr} mA</div>
+          <div class="rail-power">${rail.power} mA / ${MAX_RAIL_POWER} mA</div>
         </div>
         <div class="rail-modules">${rail.modules.map(m=>`<div class="rail-module-tag">${m}</div>`).join("")}</div>
         <div class="power-bar-wrap"><div class="power-bar ${barClass}" style="width:${pct}%"></div></div>`;
@@ -1874,3 +1795,4 @@ renderAll();
 </script>
 </body>
 </html>
+
